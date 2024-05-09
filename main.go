@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/jassuwu/scrape-psgtech/internal/scraper"
+	"github.com/jassuwu/scrape-psgtech/scraper"
 )
 
 func main() {
