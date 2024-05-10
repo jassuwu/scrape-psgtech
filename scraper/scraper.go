@@ -1,19 +1,16 @@
 package scraper
 
 import (
+  "fmt"
+  "strings"
+  "regexp"
+  "net/http"
 	"crypto/tls"
-	"fmt"
-	"net/http"
-	"net/url"
-	"regexp"
-	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
 
 var STARTING_LINK = "http://www.psgtech.edu"
-var visitedURLs = make(map[string]bool)
-var punctuationRegex = regexp.MustCompile(`[^\w\s]`)
 
 func Scrape() {
   c := NewCustomCollyCollector()
@@ -21,7 +18,8 @@ func Scrape() {
   c.OnRequest(onRequest)
   c.OnError(onError)
   c.OnResponse(onResponse)
-  c.OnHTML("a[href]", onHTML)
+  c.OnHTML("a[href]", onAnchorTag)
+  c.OnHTML("p, h1, h2, h3, h4, h5, h6, li, a, div", onTextTags)
 
   c.Visit(STARTING_LINK)
 }
@@ -74,58 +72,20 @@ func onResponse(r *colly.Response) {
   // fmt.Println("Visited", r.Request.URL.String())
 }
 
-func onHTML(e *colly.HTMLElement) {
-  // Page URL Cleaning and Visited URL Check
+func onAnchorTag(e *colly.HTMLElement) {
   pageURL := strings.Replace(e.Request.URL.String(), "https://www.", "https://", 1)
-  if visitedURLs[pageURL] {
-    return
-  }
-  visitedURLs[pageURL] = true
-
-  // Page Title Extraction
-  pageTitle := e.DOM.Find("title").Text()
-
-  // Page Text Extraction and Punctuation Removal
-  var pageText strings.Builder
-  e.ForEach("p, h1, h2, h3, h4, h5, h6, li, a, div", func(_ int, el *colly.HTMLElement) {
-    pageText.WriteString(el.Text)
-    pageText.WriteString(" ")
-  })
-
-  cleanText := punctuationRegex.ReplaceAllString(pageText.String(), "")
-
-  // URL Parsing and Processing
-  parsedURL, _ := url.Parse(pageURL)
-  parts := strings.Split(parsedURL.Host+parsedURL.Path, "/")
-  var processedURL []string
-  for _, part := range parts {
-    if part != "" {
-      processedURL = append(processedURL, part)
-    }
-  }
-
-  // Processing Text and Title
-  // In this example, we're not handling stopwords and stemming
-  // You can use external libraries like github.com/kljensen/snowball for stemming
-  processedText := strings.Fields(strings.ToLower(cleanText))
-  processedTitle := strings.Fields(strings.ToLower(pageTitle))
-
-  // Extracting Links
-  var links []string
-  e.ForEach("a[href]", func(_ int, el *colly.HTMLElement) {
-    link := el.Request.AbsoluteURL(el.Attr("href"))
-    cleanedLink := strings.Replace(link, "https://www.", "https://", 1)
-    links = append(links, cleanedLink)
-  })
-
-  // Yielding Results
-  result := map[string]any{
-    "url":   pageURL,
-    "title": processedTitle,
-    "text":  processedText,
-    "links": links,
-  }
-
-  fmt.Println(result)
   e.Request.Visit(pageURL)
+}
+
+func onTextTags(e *colly.HTMLElement) {
+  text := strings.Join(
+    strings.Fields(
+      regexp.MustCompile(`[^\w\s]`).ReplaceAllString(
+        strings.ToLower(e.Text),
+        ""),
+      ),
+    " ")
+  if text != "" {
+    fmt.Println(e.Name, "->", text)
+  }
 }
