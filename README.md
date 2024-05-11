@@ -5,7 +5,7 @@ This repository contains two packages that performs two parts of the whole backe
 ## Scraper
 This will access and read the web pages and get the text after which the preprocessing occurs.
 
-1. Crawl
+1. Crawl - `github.com/gocolly/colly/v2`
 2. Tokenize
 3. Stopword Removal
 4. Normalize
