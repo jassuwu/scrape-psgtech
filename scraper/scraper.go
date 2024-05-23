@@ -18,8 +18,10 @@ var pageLinks []string
 var visitedURLs = make(map[string]bool)
 
 type PageDocument struct {
-  Url, Title, ProcessedText string
-  Links []string
+  Url string `json:"url"`
+  Title string `json:"title"`
+  ProcessedText string `json:"processedText"`
+  Links []string `json:"links"`
 }
 
 var pageDocuments []PageDocument
