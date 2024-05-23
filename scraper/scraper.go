@@ -2,8 +2,10 @@ package scraper
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -11,8 +13,17 @@ import (
 )
 
 var STARTING_LINK = "http://www.psgtech.edu"
+var pageTitle string
 var pageText strings.Builder
+var pageLinks []string
 var visitedURLs = make(map[string]bool)
+
+type PageDocument struct {
+  Url, Title, ProcessedText string
+  Links []string
+}
+
+var pageDocuments []PageDocument
 
 func Scrape() {
   c := NewCustomCollyCollector()
@@ -20,6 +31,7 @@ func Scrape() {
   c.OnRequest(onRequest)
   c.OnError(onError)
   c.OnHTML("a[href]", onAnchorTag)
+  c.OnHTML("title", onTitleTag)
   c.OnHTML("p, h1, h2, h3, h4, h5, h6, li, a, div", onTextTags)
   c.OnScraped(onScraped)
 
@@ -60,9 +72,31 @@ func onError (r *colly.Response, err error) {
 }
 
 func onScraped(r *colly.Response) {
-  fmt.Println("PAGE TEXT: ", pageText.String())
+  moreText := strings.Join(
+		strings.Fields(
+			regexp.MustCompile(
+				`[^\w\s]`,
+			).ReplaceAllString(strings.ToLower(r.Request.URL.String() + " " + pageTitle), " "),
+		),
+	" ")
+
+  pageText.WriteString(moreText)
+
+  pageDocument := PageDocument{
+    Url: r.Request.URL.String(),
+    Title: pageTitle,
+    ProcessedText: strings.Trim(pageText.String(), " "),
+    Links: pageLinks,
+  }
+
+  pageDocuments = append(pageDocuments, pageDocument)
   pageText.Reset()
   fmt.Println("SCRAPED", r.Request.URL.String())
+  saveToJSON("psgtech.json")
+}
+
+func onTitleTag(e *colly.HTMLElement) {
+  pageTitle = e.Text
 }
 
 func onAnchorTag(e *colly.HTMLElement) {
@@ -70,8 +104,9 @@ func onAnchorTag(e *colly.HTMLElement) {
   pageURL := strings.Replace(link, "https://www.", "https://", 0)
   pageURL = strings.Replace(pageURL, "/index.html", "", 0)
 
-  if pageURL != "" && !visitedURLs[pageURL] {
+  if pageURL != "" && strings.HasPrefix(pageURL, "http") && !visitedURLs[pageURL] {
     visitedURLs[pageURL] = true
+    pageLinks = append(pageLinks, pageURL)
     e.Request.Visit(pageURL)
   }
 }
@@ -87,5 +122,20 @@ func onTextTags(e *colly.HTMLElement) {
 
   if text != "" {
     pageText.WriteString(text)
+  }
+}
+
+func saveToJSON(fileName string) {
+  file, err := os.Create(fileName)
+  if err != nil {
+    fmt.Println("JSON File couldn't be created: ", err)
+  }
+  defer file.Close()
+
+  encoder := json.NewEncoder(file)
+  encoder.SetIndent("", "  ")
+  err = encoder.Encode(pageDocuments)
+  if err != nil {
+    fmt.Println("Couldn't encode data to JSON: ", err)
   }
 }
