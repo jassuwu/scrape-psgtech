@@ -92,7 +92,7 @@ func onScraped(r *colly.Response) {
   pageDocuments = append(pageDocuments, pageDocument)
   pageText.Reset()
   fmt.Println("SCRAPED", r.Request.URL.String())
-  saveToJSON("psgtech.json")
+  saveToJSON("data/psgtech.json")
 }
 
 func onTitleTag(e *colly.HTMLElement) {
