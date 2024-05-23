@@ -5,12 +5,12 @@ This repository contains two packages that performs two parts of the whole backe
 ## Scraper
 This will access and read the web pages and get the text after which the preprocessing occurs.
 
-[x]. Crawl - `github.com/gocolly/colly/v2`
-[x]. Tokenize
-[]. Stopword Removal
-[]. Normalize
-[]. Stem/Lemmatize
-[x]. Store
+- [x] Crawl - `github.com/gocolly/colly/v2`
+- [x] Tokenize
+- [ ] Stopword Removal
+- [ ] Normalize
+- [ ] Stem/Lemmatize
+- [x] Store
 
 This will be storing 2 important information. The processed text documents, and an edgelist of all the links in some good format.
 
