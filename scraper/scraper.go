@@ -1,44 +1,35 @@
 package scraper
 
 import (
-  "fmt"
-  "strings"
-  "regexp"
-  "net/http"
 	"crypto/tls"
+	"fmt"
+	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
 
 var STARTING_LINK = "http://www.psgtech.edu"
+var pageText strings.Builder
+var visitedURLs = make(map[string]bool)
 
 func Scrape() {
   c := NewCustomCollyCollector()
 
   c.OnRequest(onRequest)
   c.OnError(onError)
-  c.OnResponse(onResponse)
   c.OnHTML("a[href]", onAnchorTag)
   c.OnHTML("p, h1, h2, h3, h4, h5, h6, li, a, div", onTextTags)
+  c.OnScraped(onScraped)
 
   c.Visit(STARTING_LINK)
 }
 
-// func initFile(fName string) {
-//   file, err := os.Create(fName)
-//   if err != nil {
-//     log.Fatalf("Cannot create file %q: %s\n", fName, err)
-//   }
-//   defer file.Close()
-//
-//   writer := csv.NewWriter(file)
-//   defer writer.Flush()
-// }
-
 func NewCustomCollyCollector() *colly.Collector {
   c := colly.NewCollector(
     colly.AllowedDomains("psgtech.edu", "www.psgtech.edu"),
-    )
+  )
 
   /*
     * Error 1: Get "https://www.psgtech.edu/": remote error: tls: handshake failure
@@ -61,20 +52,28 @@ func NewCustomCollyCollector() *colly.Collector {
 }
 
 func onRequest (r *colly.Request) {
-  fmt.Println("VISITED", r.URL.String())
+  fmt.Println("ABOUT TO VISIT", r.URL.String())
 }
 
 func onError (r *colly.Response, err error) {
-  fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+  fmt.Println("REQUEST URL:", r.Request.URL, "FAILED WITH RESPONSE", r, "\nERROR:", err)
 }
 
-func onResponse(r *colly.Response) {
-  // fmt.Println("Visited", r.Request.URL.String())
+func onScraped(r *colly.Response) {
+  fmt.Println("PAGE TEXT: ", pageText.String())
+  pageText.Reset()
+  fmt.Println("SCRAPED", r.Request.URL.String())
 }
 
 func onAnchorTag(e *colly.HTMLElement) {
-  pageURL := strings.Replace(e.Request.URL.String(), "https://www.", "https://", 1)
-  e.Request.Visit(pageURL)
+  link := e.Request.AbsoluteURL(e.Attr("href"))
+  pageURL := strings.Replace(link, "https://www.", "https://", 0)
+  pageURL = strings.Replace(pageURL, "/index.html", "", 0)
+
+  if pageURL != "" && !visitedURLs[pageURL] {
+    visitedURLs[pageURL] = true
+    e.Request.Visit(pageURL)
+  }
 }
 
 func onTextTags(e *colly.HTMLElement) {
@@ -84,8 +83,9 @@ func onTextTags(e *colly.HTMLElement) {
         strings.ToLower(e.Text),
         ""),
       ),
-    " ")
+    " ") + " "
+
   if text != "" {
-    fmt.Println(e.Name, "->", text)
+    pageText.WriteString(text)
   }
 }
