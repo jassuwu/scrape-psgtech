@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-  fmt.Println("-- helloworld from scrape-psgtech --")
+	fmt.Println("-- helloworld from scrape-psgtech --")
 
-  scraper.Scrape()
+	scraper.Scrape()
 }
