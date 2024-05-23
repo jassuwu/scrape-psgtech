@@ -2,16 +2,15 @@ package scraper
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
 
+var PSGTECH_JSON_FILE_PATH = "data/psgtech.json"
 var STARTING_LINK = "http://www.psgtech.edu"
 var pageTitle string
 var pageText strings.Builder
@@ -35,7 +34,7 @@ func Scrape() {
   c.OnHTML("p, h1, h2, h3, h4, h5, h6, li, a, div", onTextTags)
   c.OnScraped(onScraped)
 
-  c.Visit(STARTING_LINK)
+  initJSONAndStartVisiting(STARTING_LINK, c.Visit)
 }
 
 func NewCustomCollyCollector() *colly.Collector {
@@ -79,7 +78,6 @@ func onScraped(r *colly.Response) {
 			).ReplaceAllString(strings.ToLower(r.Request.URL.String() + " " + pageTitle), " "),
 		),
 	" ")
-
   pageText.WriteString(moreText)
 
   pageDocument := PageDocument{
@@ -89,10 +87,9 @@ func onScraped(r *colly.Response) {
     Links: pageLinks,
   }
 
-  pageDocuments = append(pageDocuments, pageDocument)
   pageText.Reset()
   fmt.Println("SCRAPED", r.Request.URL.String())
-  saveToJSON("data/psgtech.json")
+  appendToJSON(pageDocument)
 }
 
 func onTitleTag(e *colly.HTMLElement) {
@@ -122,20 +119,5 @@ func onTextTags(e *colly.HTMLElement) {
 
   if text != "" {
     pageText.WriteString(text)
-  }
-}
-
-func saveToJSON(fileName string) {
-  file, err := os.Create(fileName)
-  if err != nil {
-    fmt.Println("JSON File couldn't be created: ", err)
-  }
-  defer file.Close()
-
-  encoder := json.NewEncoder(file)
-  encoder.SetIndent("", "  ")
-  err = encoder.Encode(pageDocuments)
-  if err != nil {
-    fmt.Println("Couldn't encode data to JSON: ", err)
   }
 }
