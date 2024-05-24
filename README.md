@@ -1,6 +1,6 @@
 # scraper and server for psgoogle
 
-This repository contains two packages that performs two parts of the whole backend.
+This repository contains packages that performs two parts of the whole backend.
 
 ## Scraper
 This will access and read the web pages and get the text after which the preprocessing occurs.
