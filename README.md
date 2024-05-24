@@ -7,7 +7,7 @@ This will access and read the web pages and get the text after which the preproc
 
 - [x] Crawl - `github.com/gocolly/colly/v2`
 - [x] Tokenize
-- [ ] Stopword Removal
+- [x] Stopword Removal
 - [ ] Normalize
 - [ ] Stem/Lemmatize
 - [x] Store
