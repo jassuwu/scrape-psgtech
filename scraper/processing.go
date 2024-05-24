@@ -1,7 +1,10 @@
 package scraper
 
 import (
+	"regexp"
 	"strings"
+
+	"github.com/kljensen/snowball"
 )
 
 var STOP_WORDS = map[string]struct{}{
@@ -34,8 +37,9 @@ var STOP_WORDS = map[string]struct{}{
 
 func removeStopWords(text string) string {
 	words := strings.Fields(text)
-	var filteredWords []string
+	filteredWords := []string{}
 
+	// Loop thru the words in the text and check for stop words
 	for _, word := range words {
 		if _, found := STOP_WORDS[word]; !found {
 			filteredWords = append(filteredWords, word)
@@ -43,4 +47,35 @@ func removeStopWords(text string) string {
 	}
 
 	return strings.Join(filteredWords, " ")
+}
+
+func normalizeText(text string) string {
+	// Convert text to lowercase
+	text = strings.ToLower(text)
+
+	// Remove punctuation and other non-word characters
+	text = regexp.MustCompile(`[^\w\s]`).ReplaceAllString(text, "")
+
+	// Remove extra whitespace
+	text = strings.TrimSpace(text)
+	text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
+
+	return text
+}
+
+func stemText(text string) string {
+	words := strings.Fields(text)
+	stemmedWords := []string{}
+
+	// Loop thru the words in the text and stem 'em
+	for _, word := range words {
+		stemmedWord, err := snowball.Stem(word, "english", true)
+		if err != nil {
+			stemmedWords = append(stemmedWords, word)
+		} else {
+			stemmedWords = append(stemmedWords, stemmedWord)
+		}
+	}
+
+	return strings.Join(stemmedWords, " ")
 }
