@@ -11,7 +11,7 @@ import (
 )
 
 var PSGTECH_JSON_FILE_PATH = "data/psgtech.json"
-var STARTING_LINK = "http://www.psgtech.edu"
+var STARTING_LINK = "http://www.psgtech.edu/"
 var EXCLUDE_EXTENSIONS = map[string]bool{
 	".pdf":  true,
 	".jpg":  true,
@@ -120,8 +120,8 @@ func onTitleTag(e *colly.HTMLElement) {
 
 func onAnchorTag(e *colly.HTMLElement) {
 	link := e.Request.AbsoluteURL(e.Attr("href"))
-	pageURL := strings.Replace(link, "https://www.", "https://", 0)
-	pageURL = strings.Replace(pageURL, "/index.html", "", 0)
+	pageURL := strings.Replace(link, "https://www.", "https://", 1)
+	pageURL = strings.Replace(pageURL, "index.html", "", 1)
 
 	shouldVisit := pageURL != "" &&
 		strings.HasPrefix(pageURL, "http") &&
