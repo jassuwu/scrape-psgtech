@@ -97,7 +97,7 @@ func onError(r *colly.Response, err error) {
 }
 
 func onScraped(r *colly.Response) {
-	moreText := strings.Join(
+	moreText := " " + strings.Join(
 		strings.Fields(
 			regexp.MustCompile(
 				`[^\w\s]`,
@@ -140,13 +140,13 @@ func onAnchorTag(e *colly.HTMLElement) {
 }
 
 func onTextTags(e *colly.HTMLElement) {
-	text := strings.Join(
+	text := removeStopWords(strings.Join(
 		strings.Fields(
 			regexp.MustCompile(`[^\w\s]`).ReplaceAllString(
 				strings.ToLower(e.Text),
 				""),
 		),
-		" ") + " "
+		" ") + " ")
 
 	if text != "" {
 		pageText.WriteString(text)
