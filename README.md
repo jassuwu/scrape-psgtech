@@ -8,9 +8,10 @@ This will access and read the web pages and get the text after which the preproc
 - [x] Crawl - `github.com/gocolly/colly/v2`
 - [x] Tokenize
 - [x] Stopword Removal
-- [ ] Normalize
-- [ ] Stem/Lemmatize
-- [x] Store
+- [x] Normalize
+- [x] Stem/Lemmatize
+- [x] Store as JSON
+- [ ] Store in the form of an inverted index.
 
 This will be storing 2 important information. The processed text documents, and an edgelist of all the links in some good format.
 
@@ -26,11 +27,8 @@ Some things that the server should be able to do are:
 3. Serve requests really fast.
 4. Able to receive User feedback and adjust some kind of multiplier for every document.
 
-
 # Research
 
-1. Go pkgs for all the steps above and below
-2. Stemming vs. Lemmatizing
 3. TFIDF vs. BM25 (vs. Self-hosted elastic-search)
 4. In-memory vs. DB for storage
 5. Query processing steps
