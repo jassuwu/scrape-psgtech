@@ -10,32 +10,36 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-var PSGTECH_JSON_FILE_PATH = "data/psgtech.json"
-var STARTING_LINK = "http://www.psgtech.edu/"
-var EXCLUDE_EXTENSIONS = map[string]bool{
-	".pdf":  true,
-	".jpg":  true,
-	".jpeg": true,
-	".png":  true,
-	".docx": true,
-	".xlsx": true,
-	".pptx": true,
-	".md":   true,
-	".rar":  true,
-	".zip":  true,
-	".doc":  true,
-	".ppt":  true,
-	".xls":  true,
-	".mp4":  true,
-	".mp3":  true,
-	".wma":  true,
-	".gif":  true,
-}
+var (
+	PSGTECH_JSON_FILE_PATH = "data/psgtech.json"
+	STARTING_LINK          = "http://www.psgtech.edu/"
+	EXCLUDE_EXTENSIONS     = map[string]bool{
+		".pdf":  true,
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".docx": true,
+		".xlsx": true,
+		".pptx": true,
+		".md":   true,
+		".rar":  true,
+		".zip":  true,
+		".doc":  true,
+		".ppt":  true,
+		".xls":  true,
+		".mp4":  true,
+		".mp3":  true,
+		".wma":  true,
+		".gif":  true,
+	}
+)
 
-var pageTitle string
-var pageText strings.Builder
-var pageLinks []string
-var visitedURLs = make(map[string]bool)
+var (
+	pageTitle   string
+	pageText    strings.Builder
+	pageLinks   []string
+	visitedURLs = make(map[string]bool)
+)
 
 type PageDocument struct {
 	Url           string   `json:"url"`
