@@ -16,6 +16,7 @@ var (
 )
 
 func main() {
+	startProgram := time.Now()
 	fmt.Println("SCRAPING INITIATED")
 
 	startScraping := time.Now()
@@ -29,4 +30,6 @@ func main() {
 	} else {
 		fmt.Println("Indexing completed successfully in: ", time.Since(startIndexing))
 	}
+
+	fmt.Println("Program completed successfully in: ", time.Since(startProgram))
 }
