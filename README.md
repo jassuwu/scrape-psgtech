@@ -1,4 +1,4 @@
-# scraper and server for psgoogle
+# scraper, indexer and server for psgoogle
 
 This repository contains packages that performs parts of the whole backend.
 
