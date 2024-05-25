@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jassuwu/scrape-psgtech/indexer"
+	"github.com/jassuwu/scrape-psgtech/scraper"
 )
 
 var (
@@ -15,9 +16,11 @@ var (
 )
 
 func main() {
-	fmt.Println("-- helloworld from scrape-psgtech --")
+	fmt.Println("SCRAPING INITIATED")
 
-	// scraper.Scrape()
+	startScraping := time.Now()
+	scraper.Scrape()
+	fmt.Println("Scraping completed successfully in: ", time.Since(startScraping))
 
 	startIndexing := time.Now()
 	err := indexer.IndexDocuments(PSGTECH_JSON, INVERTED_INDEX_JSON, K1, B)
