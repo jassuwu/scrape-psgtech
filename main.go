@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/jassuwu/scrape-psgtech/indexer"
@@ -21,15 +22,15 @@ func main() {
 
 	startScraping := time.Now()
 	scraper.Scrape()
-	fmt.Println("Scraping completed successfully in: ", time.Since(startScraping))
+	log.Println("Scraping completed successfully in: ", time.Since(startScraping))
 
 	startIndexing := time.Now()
 	err := indexer.IndexDocuments(PSGTECH_JSON, INVERTED_INDEX_JSON, K1, B)
 	if err != nil {
-		fmt.Println("Error indexing the documents", err)
+		log.Println("Error indexing the documents", err)
 	} else {
-		fmt.Println("Indexing completed successfully in: ", time.Since(startIndexing))
+		log.Println("Indexing completed successfully in: ", time.Since(startIndexing))
 	}
 
-	fmt.Println("Program completed successfully in: ", time.Since(startProgram))
+	log.Println("Program completed successfully in: ", time.Since(startProgram))
 }
