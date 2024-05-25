@@ -17,8 +17,11 @@ This will be storing 2 important information. The processed text documents, and 
 ## Indexer
 This will take the data stores in the JSON and process it as per the chosen IR algorithm and store it in the appropriate data structure, either in-memory or DB.
 
-- [ ] Choose the IR algorithm & data structure.
-- [ ] Perform the algorithm and store in the correct format.
+- [x] Choose the IR algorithm & data structure. (Chosen Okapi BM25)
+- [x] Perform the algorithm and store in the correct format. (Stored in JSON as an inverted index.)
+
+Testrun of the first iteration of the indexer and scraper:
+![Testrun](/assets/testrun.png "testrun")
 
 ## Server
 This will be public facing, initially read the information into memory (since, it's not a huge corpus in this case, this shouldn't be a huge problem), then
@@ -34,6 +37,4 @@ Some things that the server should be able to do are:
 
 # Research
 
-3. TFIDF vs. BM25 (vs. Self-hosted elastic-search)
-4. In-memory vs. DB for storage
 5. Query processing steps
