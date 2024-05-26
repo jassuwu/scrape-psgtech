@@ -18,11 +18,11 @@ type BM25Score struct {
 }
 
 type InvertedIndex struct {
-	BM25Scores    map[string][]BM25Score
-	AvgDocLength  float64
-	K1            float64
-	B             float64
-	DocumentCount int
+	BM25Scores    map[string][]BM25Score `json:"bm25Scores"`
+	AvgDocLength  float64                `json:"avgDocLength"`
+	K1            float64                `json:"k1"`
+	B             float64                `json:"b"`
+	DocumentCount int                    `json:"documentCount"`
 }
 
 func IndexDocuments(inputF, outputF string, k1, b float64) error {
@@ -47,14 +47,14 @@ func IndexDocuments(inputF, outputF string, k1, b float64) error {
 	return nil
 }
 
-func loadScrapedDocuments(fileName string) ([]scraper.PageDocument, error) {
+func loadScrapedDocuments(fileName string) (map[string]scraper.PageDocument, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	documents := []scraper.PageDocument{}
+	documents := make(map[string]scraper.PageDocument)
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&documents)
 	if err != nil {
@@ -64,17 +64,20 @@ func loadScrapedDocuments(fileName string) ([]scraper.PageDocument, error) {
 	return documents, nil
 }
 
-func calculateBM25Scores(docs []scraper.PageDocument, k1, b float64) (*InvertedIndex, error) {
+func calculateBM25Scores(
+	docs map[string]scraper.PageDocument,
+	k1, b float64,
+) (*InvertedIndex, error) {
 	termFrequency := make(map[string]map[string]int)
 	documentFrequency := make(map[string]int)
 	documentLength := make(map[string]int)
 
 	totalLength := 0
 
-	for _, doc := range docs {
+	for url, doc := range docs {
 		terms := strings.Fields(doc.ProcessedText)
 		docLength := len(terms)
-		documentLength[doc.Url] = docLength
+		documentLength[url] = docLength
 		totalLength += docLength
 
 		termCount := make(map[string]int)
@@ -86,7 +89,7 @@ func calculateBM25Scores(docs []scraper.PageDocument, k1, b float64) (*InvertedI
 			if termFrequency[term] == nil {
 				termFrequency[term] = make(map[string]int)
 			}
-			termFrequency[term][doc.Url] = count
+			termFrequency[term][url] = count
 			documentFrequency[term]++
 		}
 	}
@@ -126,7 +129,6 @@ func (idx *InvertedIndex) save(fileName string) error {
 
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(idx)
-	encoder.SetIndent("", "  ")
 	if err != nil {
 		return err
 	}

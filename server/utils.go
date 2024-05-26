@@ -18,7 +18,7 @@ type RankedDocument struct {
 
 func rankDocuments(
 	query string,
-	docs []scraper.PageDocument,
+	docs map[string]scraper.PageDocument,
 	idx *indexer.InvertedIndex,
 ) []RankedDocument {
 	queryTerms := strings.Fields(processQuery(query))
@@ -34,18 +34,13 @@ func rankDocuments(
 
 	rankedDocs := make([]RankedDocument, 0, len(docScores))
 	for url, score := range docScores {
-		var title string
-		for _, doc := range docs {
-			if doc.Url == url {
-				title = doc.Title
-			}
-			break
+		if doc, found := docs[url]; found {
+			rankedDocs = append(rankedDocs, RankedDocument{
+				Url:   url,
+				Title: doc.Title,
+				Score: score,
+			})
 		}
-		rankedDocs = append(rankedDocs, RankedDocument{
-			Url:   url,
-			Title: title,
-			Score: score,
-		})
 	}
 
 	// Reverse sort the ranked documents w.r.t. the BM25 score
@@ -68,7 +63,7 @@ func processQuery(query string) string {
 
 func loadData(
 	psgtechFilePath, invertedIndexFilePath string,
-) ([]scraper.PageDocument, *indexer.InvertedIndex, error) {
+) (map[string]scraper.PageDocument, *indexer.InvertedIndex, error) {
 	psgtechFile, err := os.OpenFile(psgtechFilePath, os.O_RDONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +71,7 @@ func loadData(
 	}
 	defer psgtechFile.Close()
 
-	documents := []scraper.PageDocument{}
+	documents := make(map[string]scraper.PageDocument)
 	decoder := json.NewDecoder(psgtechFile)
 	err = decoder.Decode(&documents)
 	if err != nil {

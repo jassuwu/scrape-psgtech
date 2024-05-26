@@ -15,7 +15,7 @@ func initJSONAndStartVisiting(startingLink string, visitFn func(string) error) {
 		fmt.Println("JSON file couldn't be created: ", err)
 		return
 	}
-	file.WriteString("[")
+	file.WriteString("{")
 	file.Close()
 
 	visitFn(startingLink)
@@ -25,31 +25,34 @@ func initJSONAndStartVisiting(startingLink string, visitFn func(string) error) {
 		fmt.Println("JSON file couldn't be opened: ", err)
 		return
 	}
-	file.WriteString("]")
+	file.WriteString("}")
 	file.Close()
 }
 
 func appendToJSON(pageDocument PageDocument) {
 	file, err := os.OpenFile(PSGTECH_JSON_FILE_PATH, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println("JSON file couldn't be opened: ", err)
+		fmt.Println("JSON file couldn't be opened:", err)
 		return
 	}
 	defer file.Close()
 
-	encoder := json.NewEncoder(file)
-
 	fileInfo, err := file.Stat()
 	if err != nil {
-		fmt.Println("JSON file info was not gettable: ", err)
+		fmt.Println("JSON file info was not gettable:", err)
 	}
-
 	if fileInfo.Size() > 1 {
+		// Remove the trailing '}' to add the new entry
+		file.Seek(fileInfo.Size()-1, 0)
 		file.WriteString(",")
 	}
 
-	err = encoder.Encode(pageDocument)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(map[string]PageDocument{pageDocument.Url: pageDocument})
 	if err != nil {
-		fmt.Println("Couldn't encode data to JSON: ", err)
+		fmt.Println("Couldn't encode data to JSON:", err)
 	}
+
+	// Add back the closing '}'
+	file.WriteString("}")
 }

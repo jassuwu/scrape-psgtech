@@ -16,6 +16,7 @@ var (
 	INVERTED_INDEX_JSON = "data/inverted_index.json"
 	K1                  = 1.2
 	B                   = 0.75
+	SERVER_URL          = "localhost:8000"
 )
 
 func main() {
@@ -42,5 +43,6 @@ func main() {
 	}
 
 	// Start the server in the end
+	log.Println("SERVER INITIATION @ ", SERVER_URL)
 	server.Serve()
 }
