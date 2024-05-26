@@ -15,6 +15,8 @@ func initJSONAndStartVisiting(startingLink string, visitFn func(string) error) {
 		fmt.Println("JSON file couldn't be created:", err)
 		return
 	}
+
+	// Open the JSON object
 	_, err = file.WriteString("{")
 	if err != nil {
 		fmt.Println("JSON file couldn't be initialized:", err)
@@ -50,8 +52,7 @@ func appendToJSON(pageDocument PageDocument) {
 		return
 	}
 
-	if fileInfo.Size() > 1 { // Check if the file already contains entries
-		// Move back two bytes to overwrite the closing }
+	if fileInfo.Size() > 1 {
 		file.Seek(fileInfo.Size()-1, 0)
 		file.WriteString(",")
 	}
