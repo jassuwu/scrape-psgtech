@@ -21,7 +21,6 @@ func initJSONAndStartVisiting(startingLink string, visitFn func(string) error) {
 	}
 	file.Close()
 
-	fmt.Println("Opened the curly")
 	visitFn(startingLink)
 
 	// Close the JSON object
@@ -51,16 +50,12 @@ func appendToJSON(pageDocument PageDocument) {
 		return
 	}
 
-	fmt.Println(fileInfo.Size())
 	if fileInfo.Size() > 1 { // Check if the file already contains entries
 		// Move back two bytes to overwrite the closing }
 		file.Seek(fileInfo.Size()-1, 0)
 		file.WriteString(",")
-	} else {
-		fmt.Println("didn't insert a comma now ")
 	}
 
-	fmt.Println(fileInfo.Size())
 	entry := fmt.Sprintf(`"%s":`, pageDocument.Url)
 	_, err = file.WriteString(entry)
 	if err != nil {
@@ -68,7 +63,6 @@ func appendToJSON(pageDocument PageDocument) {
 		return
 	}
 
-	fmt.Println(fileInfo.Size())
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(pageDocument)
 	if err != nil {
