@@ -43,6 +43,6 @@ func main() {
 	}
 
 	// Start the server in the end
-	log.Println("SERVER INITIATION @ ", SERVER_URL)
+	log.Println("SERVER INITIATION @", SERVER_URL)
 	server.Serve()
 }
