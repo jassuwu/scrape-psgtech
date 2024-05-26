@@ -31,10 +31,11 @@ The server will take queries for search with keywords and search the corpus for 
 Some things that the server should be able to do are:
 
 - [ ] Calc and store PageRank scores
-- [ ] Process queries (maybe even some pseudo relevance feedback ?)
-- [ ] Serve requests really fast.
+- [x] Process queries
+- [x] Serve requests really fast.
 - [ ] Able to receive User feedback and adjust some kind of multiplier for every document.
 
 # Research
 
-5. Query processing steps
+- Incorporation of PageRank scores.
+- Approriate method of user relevance feedback.
