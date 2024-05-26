@@ -6,17 +6,23 @@ import (
 	"net/http"
 
 	jsoniter "github.com/json-iterator/go"
+
+	"github.com/jassuwu/scrape-psgtech/indexer"
+	"github.com/jassuwu/scrape-psgtech/scraper"
 )
 
 var (
-	json                                  = jsoniter.ConfigCompatibleWithStandardLibrary
+	json          = jsoniter.ConfigCompatibleWithStandardLibrary
+	documents     map[string]scraper.PageDocument
+	invertedIndex *indexer.InvertedIndex
+	dataLoadErr   error
+)
+
+func Serve() {
 	documents, invertedIndex, dataLoadErr = loadData(
 		"data/psgtech.json",
 		"data/inverted_index.json",
 	)
-)
-
-func Serve() {
 	if dataLoadErr != nil {
 		log.Fatal(dataLoadErr)
 		return
