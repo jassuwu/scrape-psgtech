@@ -21,7 +21,7 @@ This will take the data stores in the JSON and process it as per the chosen IR a
 - [x] Perform the algorithm and store in the correct format. (Stored in JSON as an inverted index.)
 
 Testrun of the first iteration of the indexer and scraper:
-![Testrun](/assets/testrun.png "testrun")
+![Testrun](/repoassets/testrun.png "testrun")
 
 ## Server
 This will be public facing, initially read the information into memory (since, it's not a huge corpus in this case, this shouldn't be a huge problem), then
