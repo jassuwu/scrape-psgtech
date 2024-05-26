@@ -104,7 +104,7 @@ func onScraped(r *colly.Response) {
 			).ReplaceAllString(strings.ToLower(r.Request.URL.String()+" "+pageTitle), " "),
 		),
 		" ")
-	pageText.WriteString(stemText(removeStopWords(moreText)))
+	pageText.WriteString(StemText(RemoveStopWords(moreText)))
 
 	pageDocument := PageDocument{
 		Url:           r.Request.URL.String(),
@@ -141,9 +141,9 @@ func onAnchorTag(e *colly.HTMLElement) {
 }
 
 func onTextTags(e *colly.HTMLElement) {
-	text := stemText(
-		removeStopWords(
-			normalizeText(
+	text := StemText(
+		RemoveStopWords(
+			NormalizeText(
 				e.Text,
 			),
 		),

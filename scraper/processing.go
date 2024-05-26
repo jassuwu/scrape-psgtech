@@ -35,7 +35,7 @@ var STOP_WORDS = map[string]struct{}{
 	"http": {},
 }
 
-func removeStopWords(text string) string {
+func RemoveStopWords(text string) string {
 	words := strings.Fields(text)
 	filteredWords := []string{}
 
@@ -49,7 +49,7 @@ func removeStopWords(text string) string {
 	return strings.Join(filteredWords, " ")
 }
 
-func normalizeText(text string) string {
+func NormalizeText(text string) string {
 	// Convert text to lowercase
 	text = strings.ToLower(text)
 
@@ -63,7 +63,7 @@ func normalizeText(text string) string {
 	return text
 }
 
-func stemText(text string) string {
+func StemText(text string) string {
 	words := strings.Fields(text)
 	stemmedWords := []string{}
 
