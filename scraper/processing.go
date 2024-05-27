@@ -35,6 +35,26 @@ var STOP_WORDS = map[string]struct{}{
 	"http": {},
 }
 
+var EXCLUDE_EXTENSIONS = map[string]struct{}{
+	".pdf":  {},
+	".jpg":  {},
+	".jpeg": {},
+	".png":  {},
+	".docx": {},
+	".xlsx": {},
+	".pptx": {},
+	".md":   {},
+	".rar":  {},
+	".zip":  {},
+	".doc":  {},
+	".ppt":  {},
+	".xls":  {},
+	".mp4":  {},
+	".mp3":  {},
+	".wma":  {},
+	".gif":  {},
+}
+
 func RemoveStopWords(text string) string {
 	words := strings.Fields(text)
 	filteredWords := []string{}
@@ -78,4 +98,15 @@ func StemText(text string) string {
 	}
 
 	return strings.Join(stemmedWords, " ")
+}
+
+// Exclude scraping a URL if it is for one of the excluded extensions
+func hasExcludedExtension(url string) bool {
+	dotIndex := strings.LastIndex(url, ".")
+	if dotIndex != -1 {
+		ext := url[dotIndex:]
+		_, ok := EXCLUDE_EXTENSIONS[strings.ToLower(ext)]
+		return ok
+	}
+	return false
 }

@@ -13,25 +13,6 @@ import (
 var (
 	PSGTECH_JSON_FILE_PATH = "data/psgtech.json"
 	STARTING_LINK          = "http://www.psgtech.edu/"
-	EXCLUDE_EXTENSIONS     = map[string]bool{
-		".pdf":  true,
-		".jpg":  true,
-		".jpeg": true,
-		".png":  true,
-		".docx": true,
-		".xlsx": true,
-		".pptx": true,
-		".md":   true,
-		".rar":  true,
-		".zip":  true,
-		".doc":  true,
-		".ppt":  true,
-		".xls":  true,
-		".mp4":  true,
-		".mp3":  true,
-		".wma":  true,
-		".gif":  true,
-	}
 )
 
 var (
@@ -152,13 +133,4 @@ func onTextTags(e *colly.HTMLElement) {
 	if text != "" {
 		pageText.WriteString(text)
 	}
-}
-
-func hasExcludedExtension(url string) bool {
-	dotIndex := strings.LastIndex(url, ".")
-	if dotIndex != -1 {
-		ext := url[dotIndex:]
-		return EXCLUDE_EXTENSIONS[strings.ToLower(ext)]
-	}
-	return false
 }
