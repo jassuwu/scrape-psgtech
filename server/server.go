@@ -77,5 +77,8 @@ func search(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, err)
 	}
 
+	// log to stdout
+	log.Println("Served search request for: ", q)
+
 	fmt.Fprintln(w, data)
 }
