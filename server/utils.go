@@ -25,9 +25,9 @@ func rankDocuments(
 	docScores := make(map[string]float64)
 
 	for _, term := range queryTerms {
-		if scores, found := idx.BM25Scores[term]; found {
+		if scores, found := idx.IndexedWords[term]; found {
 			for _, score := range scores {
-				docScores[score.DocumentURL] += score.Score
+				docScores[score.DocumentURL] += score.BM25Score
 			}
 		}
 	}

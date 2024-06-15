@@ -68,7 +68,7 @@ func collectWords(node *TrieNode, prefix string) []string {
 func makeTrie(idx *indexer.InvertedIndex) *Trie {
 	trie := newTrie()
 	start := time.Now()
-	for word := range idx.BM25Scores {
+	for word := range idx.IndexedWords {
 		trie.insert(word)
 	}
 	log.Println("Autocompletion Trie Initialized in: ", time.Since(start))

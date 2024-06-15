@@ -12,17 +12,18 @@ import (
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
-type BM25Score struct {
-	DocumentURL string  `json:"documentURL"`
-	Score       float64 `json:"score"`
+type IndexedWord struct {
+	DocumentURL   string   `json:"documentURL"`
+	BM25Score     float64  `json:"bm25score"`
+	OriginalWords []string `json:"originalWords"`
 }
 
 type InvertedIndex struct {
-	BM25Scores    map[string][]BM25Score `json:"bm25Scores"`
-	AvgDocLength  float64                `json:"avgDocLength"`
-	K1            float64                `json:"k1"`
-	B             float64                `json:"b"`
-	DocumentCount int                    `json:"documentCount"`
+	IndexedWords  map[string][]IndexedWord `json:"indexedWords"`
+	AvgDocLength  float64                  `json:"avgDocLength"`
+	K1            float64                  `json:"k1"`
+	B             float64                  `json:"b"`
+	DocumentCount int                      `json:"documentCount"`
 }
 
 func IndexDocuments(inputF, outputF string, k1, b float64) error {
@@ -95,7 +96,7 @@ func calculateBM25Scores(
 	}
 
 	avgDocLen := float64(totalLength) / float64(len(docs))
-	bm25Scores := make(map[string][]BM25Score)
+	indexedWords := make(map[string][]IndexedWord)
 
 	for term, docFreqMap := range termFrequency {
 		idf := math.Log(
@@ -104,15 +105,15 @@ func calculateBM25Scores(
 		for docURL, tf := range docFreqMap {
 			docLen := float64(documentLength[docURL])
 			score := idf * (float64(tf) * (k1 + 1)) / (float64(tf) + k1*(1-b+b*(docLen/avgDocLen)))
-			bm25Scores[term] = append(
-				bm25Scores[term],
-				BM25Score{DocumentURL: docURL, Score: score},
+			indexedWords[term] = append(
+				indexedWords[term],
+				IndexedWord{DocumentURL: docURL, BM25Score: score},
 			)
 		}
 	}
 
 	return &InvertedIndex{
-		BM25Scores:    bm25Scores,
+		IndexedWords:  indexedWords,
 		AvgDocLength:  avgDocLen,
 		K1:            k1,
 		B:             b,
