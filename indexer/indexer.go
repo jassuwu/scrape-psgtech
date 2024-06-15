@@ -13,9 +13,8 @@ import (
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 type IndexedWord struct {
-	DocumentURL   string   `json:"documentURL"`
-	BM25Score     float64  `json:"bm25score"`
-	OriginalWords []string `json:"originalWords"`
+	DocumentURL string  `json:"documentURL"`
+	BM25Score   float64 `json:"bm25score"`
 }
 
 type InvertedIndex struct {
