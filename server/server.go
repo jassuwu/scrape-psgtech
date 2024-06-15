@@ -15,7 +15,6 @@ var (
 	json          = jsoniter.ConfigCompatibleWithStandardLibrary
 	documents     map[string]scraper.PageDocument
 	invertedIndex *indexer.InvertedIndex
-	trie          *Trie
 	dataLoadErr   error
 )
 
@@ -24,7 +23,6 @@ func Serve() {
 		"data/psgtech.json",
 		"data/inverted_index.json",
 	)
-	trie = makeTrie(invertedIndex)
 
 	if dataLoadErr != nil {
 		log.Fatal(dataLoadErr)
