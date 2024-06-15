@@ -3,6 +3,7 @@ package scraper
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -74,7 +75,7 @@ func onRequest(r *colly.Request) {
 }
 
 func onError(r *colly.Response, err error) {
-	fmt.Println("ERROR:", err, "IN URL", r.Request.URL, "FAILED WITH RESPONSE", r.StatusCode)
+	log.Println("ERROR:", err, "IN URL", r.Request.URL, "FAILED WITH RESPONSE", r.StatusCode)
 }
 
 func onScraped(r *colly.Response) {
@@ -96,7 +97,7 @@ func onScraped(r *colly.Response) {
 
 	pageText.Reset()
 	pageLinks = nil
-	fmt.Println("SCRAPED", r.Request.URL.String())
+	log.Println("SCRAPED", r.Request.URL.String())
 	appendToJSON(pageDocument)
 }
 
