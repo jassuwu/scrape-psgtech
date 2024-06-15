@@ -15,6 +15,7 @@ var (
 	json          = jsoniter.ConfigCompatibleWithStandardLibrary
 	documents     map[string]scraper.PageDocument
 	invertedIndex *indexer.InvertedIndex
+	trie          *Trie
 	dataLoadErr   error
 )
 
@@ -23,6 +24,8 @@ func Serve() {
 		"data/psgtech.json",
 		"data/inverted_index.json",
 	)
+	trie = makeTrie(invertedIndex)
+
 	if dataLoadErr != nil {
 		log.Fatal(dataLoadErr)
 		return
@@ -34,6 +37,7 @@ func Serve() {
 	mux.HandleFunc("GET /ping", ping)
 	mux.HandleFunc("GET /health", ping)
 	mux.HandleFunc("GET /search", search)
+	mux.HandleFunc("GET /ac", autocomplete)
 
 	http.ListenAndServe(":8000", mux)
 }
@@ -78,7 +82,24 @@ func search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log to stdout
-	log.Println("Served search request for: ", q)
+	log.Printf("/search?q=\"%s\"\n", q)
 
+	fmt.Fprintln(w, data)
+}
+
+func autocomplete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+
+	prefix := r.FormValue("prefix")
+	completionWords := trie.findWordsWithPrefix(prefix)
+
+	data, err := json.MarshalToString(
+		map[string]any{"results": completionWords, "error": false},
+	)
+	if err != nil {
+		fmt.Fprintln(w, err)
+	}
+
+	log.Printf("/ac?prefix=\"%s\"\n", prefix)
 	fmt.Fprintln(w, data)
 }
