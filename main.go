@@ -22,6 +22,10 @@ var (
 func main() {
 	log.Println("PROGRAM INITIATED")
 
+	if err := os.MkdirAll("data", os.ModePerm); err != nil {
+		log.Fatal("Failed to create the data directory", err)
+	}
+
 	if _, err := os.Stat(PSGTECH_JSON); errors.Is(err, os.ErrNotExist) {
 		startScraping := time.Now()
 		scraper.Scrape()
