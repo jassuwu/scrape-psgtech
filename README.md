@@ -34,10 +34,18 @@ Some things that the server should be able to do are:
 - [ ] Able to receive User feedback and adjust some kind of multiplier for every document.
 
 ## Speeds
-- [Scraping and Indexing](/repoassets/scrape_and_index_speed.png)
-- [Difference due to caching](/repoassets/caching_diff.png)
+Read world runs of some components.
 
-# Research
+- [Scraping and Indexing](/repoassets/scrape_and_index_speed.png) - Depends on the psgtech.edu server. But a great improvement over the previous backend's 30 minutes plus runs.
+- [Difference due to caching](/repoassets/caching_diff.png) - IMO, the cache is an overkill for the new server. Previously, there used to be noticable idle time for each query where this might've been needed.
+
+# TODO/RESEARCH
 
 - Incorporation of PageRank scores.
 - Approriate method of user relevance feedback.
+
+# Links
+
+- [search-psgtech - the webfacing nextjs app for this backend](https://github.com/jassuwu/search-psgtech)
+- [psgoogle - repo with the docker-compose that is used to deploy everything together](https://github.com/jassuwu/psgoogle)
+- [the old slow python (ew) backend](https://github.com/jassuwu/psgtechdotedu-scraping)
