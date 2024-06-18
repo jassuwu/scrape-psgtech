@@ -34,8 +34,8 @@ Some things that the server should be able to do are:
 - [ ] Able to receive User feedback and adjust some kind of multiplier for every document.
 
 ## Speeds
-- ![Scraping and Indexing](/repoassets/scrape_and_index_speed "scrape_and_index_speed")
-- ![Difference due to caching](/repoassets/caching_diff" "caching_diff")
+- ![Scraping and Indexing](/repoassets/scrape_and_index_speed.png "scrape_and_index_speed")
+- ![Difference due to caching](/repoassets/caching_diff.png "caching_diff")
 
 # Research
 
