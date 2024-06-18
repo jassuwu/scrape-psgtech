@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -31,9 +32,7 @@ func Serve() {
 		return
 	}
 
-	searchCache = NewCache("localhost:6379")
-	log.Println("CONNECTED TO CACHE")
-
+	searchCache = NewCache()
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", root)
@@ -41,7 +40,11 @@ func Serve() {
 	mux.HandleFunc("GET /health", ping)
 	mux.HandleFunc("GET /search", search)
 
-	http.ListenAndServe(":8000", mux)
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		addr = ":8000"
+	}
+	http.ListenAndServe(addr, mux)
 }
 
 func root(w http.ResponseWriter, _ *http.Request) {

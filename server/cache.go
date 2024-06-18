@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -12,13 +13,16 @@ type Cache struct {
 	bgCtx       context.Context
 }
 
-func NewCache(Addr string) *Cache {
+func NewCache() *Cache {
+	addr := os.Getenv("REDIS_ADDR")
+	password := os.Getenv("REDIS_PASSWORD")
 	client := redis.NewClient(&redis.Options{
-		Addr:     Addr,
-		Password: "", // Setting no password
-		DB:       0,  // Use default DB
+		Addr:     addr,
+		Password: password,
+		DB:       0, // Use default DB
 	})
 	ctx := context.Background()
+	log.Println("CONNECTED TO REDIS CACHE")
 
 	if err := client.FlushDB(ctx).Err(); err != nil {
 		log.Fatalln("Failed to flush Redis DB: ", err)
