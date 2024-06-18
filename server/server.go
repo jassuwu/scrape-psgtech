@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	jsoniter "github.com/json-iterator/go"
 
@@ -16,6 +18,7 @@ var (
 	documents     map[string]scraper.PageDocument
 	invertedIndex *indexer.InvertedIndex
 	dataLoadErr   error
+	searchCache   *Cache
 )
 
 func Serve() {
@@ -29,6 +32,7 @@ func Serve() {
 		return
 	}
 
+	searchCache = NewCache()
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", root)
@@ -36,7 +40,11 @@ func Serve() {
 	mux.HandleFunc("GET /health", ping)
 	mux.HandleFunc("GET /search", search)
 
-	http.ListenAndServe(":8000", mux)
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		addr = ":8000"
+	}
+	http.ListenAndServe(addr, mux)
 }
 
 func root(w http.ResponseWriter, _ *http.Request) {
@@ -67,9 +75,22 @@ func ping(w http.ResponseWriter, _ *http.Request) {
 
 func search(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	start := time.Now()
 
 	q := r.FormValue("q")
-	rankedDocuments := rankDocuments(q, documents, invertedIndex)
+	cacheKey := "search:" + q
+	cacheHit := false
+
+	rankedDocuments := []RankedDocument{}
+	if cachedResults, err := searchCache.Get(cacheKey); err == nil {
+		rankedDocuments = cachedResults
+		cacheHit = true
+	} else {
+		rankedDocuments = rankDocuments(q, documents, invertedIndex)
+		if _, err := searchCache.Set(cacheKey, rankedDocuments); err != nil {
+			log.Println("Error caching results for search: ", q)
+		}
+	}
 
 	data, err := json.MarshalToString(
 		map[string]any{"results": rankedDocuments, "error": false},
@@ -79,7 +100,10 @@ func search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log to stdout
-	log.Printf("/search?q=\"%s\"\n", q)
-
+	if cacheHit {
+		log.Printf("/search?q=\"%s\" took %v. (from cache)\n", q, time.Since(start))
+	} else {
+		log.Printf("/search?q=\"%s\" took %v.\n", q, time.Since(start))
+	}
 	fmt.Fprintln(w, data)
 }

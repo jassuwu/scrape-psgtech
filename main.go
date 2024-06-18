@@ -16,11 +16,10 @@ var (
 	INVERTED_INDEX_JSON = "data/inverted_index.json"
 	K1                  = 1.2
 	B                   = 0.75
-	SERVER_URL          = "localhost:8000"
 )
 
 func main() {
-	log.Println("PROGRAM INITIATED")
+	log.Println("SERVER INITIATED")
 
 	if err := os.MkdirAll("data", os.ModePerm); err != nil {
 		log.Fatal("Failed to create the data directory", err)
@@ -47,6 +46,6 @@ func main() {
 	}
 
 	// Start the server in the end
-	log.Println("SERVER INITIATION @", SERVER_URL)
+	log.Println("SERVER READY")
 	server.Serve()
 }
