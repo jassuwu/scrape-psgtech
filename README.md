@@ -20,9 +20,6 @@ This will take the data stores in the JSON and process it as per the chosen IR a
 - [x] Choose the IR algorithm & data structure. (Chosen Okapi BM25)
 - [x] Perform the algorithm and store in the correct format. (Stored in JSON as an inverted index.)
 
-Testrun of the first iteration of the indexer and scraper:
-![Testrun](/repoassets/testrun.png "testrun")
-
 ## Server
 This will be public facing, initially read the information into memory (since, it's not a huge corpus in this case, this shouldn't be a huge problem), then
 construct the web graph for pageranking, and store them in memory as well.
@@ -33,7 +30,12 @@ Some things that the server should be able to do are:
 - [ ] Calc and store PageRank scores
 - [x] Process queries
 - [x] Serve requests really fast.
+    - [x] Caching search results to serve requests faster.
 - [ ] Able to receive User feedback and adjust some kind of multiplier for every document.
+
+## Speeds
+- ![Scraping and Indexing](/repoassets/scrape_and_index_speed "scrape_and_index_speed")
+- ![Difference due to caching](/repoassets/caching_diff" "caching_diff")
 
 # Research
 
